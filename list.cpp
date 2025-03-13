@@ -2,9 +2,25 @@
 
 #include <iostream>
 #include <list>
-using n
-amespace std;
+using namespace std;
 
 int main(){
-    cout<<"List in C++ STL"<<endl;
+    list<int> l;
+
+    l.push_front(1);
+    l.push_back(2);
+    
+    for(int i:l){
+        cout<<i<<" ";
+    }
+
+    cout<<endl;
+    l.erase(l.begin());
+    for(int i:l){
+        cout<<i<<" ";
+    }
+
+    cout<<"size of list"<<l.size()<<endl;
+
+
 }
