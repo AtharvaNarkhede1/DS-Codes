@@ -2,7 +2,8 @@
 
 #include <iostream>
 #include <list>
-using namespace std;
+using n
+amespace std;
 
 int main(){
     
