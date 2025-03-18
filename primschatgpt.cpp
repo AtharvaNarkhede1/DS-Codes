@@ -18,7 +18,7 @@ vector<pair<int, int>> primsMST(int n, vector<vector<int>> &edges) {
     vector<int> parent(n + 1, -1);
     
     key[1] = 0;
-    
+     
     for (int count = 1; count < n; count++) {
         int minKey = INT_MAX, u = -1;
         
