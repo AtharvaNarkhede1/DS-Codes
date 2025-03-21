@@ -10,6 +10,8 @@ vector<int> dijkstra(vector<vector<int>> &vec, int vertices, int egdes, int sour
         int w = vec[i][2];
 
         adj[u].push_back
+          
+
         
     }
 }
