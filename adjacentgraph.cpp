@@ -1,10 +1,12 @@
 #include <iostream>
+#include <vector>
 using namespace std;
 
 class graph {
     public:
     int v, e;
     int a[10][10];
+    vector<pair<int, int>> adjList[10]; // Adjacency List
 
     graph() {
         for(int i = 0; i < 10; i++) {
@@ -29,15 +31,29 @@ class graph {
             cin >> y;
             cout << "Enter distance: ";
             cin >> weight;
+            
             a[x][y] = weight;
             a[y][x] = weight;
+            
+            adjList[x].push_back({y, weight});
+            adjList[y].push_back({x, weight});
         }
     }
 
     void display() {
+        cout << "\nAdjacency Matrix:\n";
         for(int i = 0; i < v; i++) {
             for(int j = 0; j < v; j++) {
-                cout << a[i][j] << " ";
+                cout << a[i][j] << "    ";
+            }
+            cout << endl;
+        }
+        
+        cout << "\nAdjacency List:\n";
+        for(int i = 0; i < v; i++) {
+            cout << "Vertex " << i << " -> ";
+            for(auto edge : adjList[i]) {
+                cout << "( " << edge.first << ", " << edge.second << " ) ";
             }
             cout << endl;
         }
@@ -67,11 +83,10 @@ int main() {
     g.display();
 
     int choice;
-
     do{
-        cout<<"Enter Choice\n";
-        cout<<"\n 1.Find Distance\n 2.Calculate Travel Cost\n 3.Exit\n: ";
-        cin>>choice;
+        cout << "Enter Choice\n";
+        cout << "\n 1. Find Distance\n 2. Calculate Travel Cost\n 3. Exit\n: ";
+        cin >> choice;
         switch(choice){
             case 1:
                 int city1, city2;
@@ -94,6 +109,6 @@ int main() {
                 cout << "Invalid choice. Please try again." << endl;
         }
     } while (choice != 3);
-
+    
     return 0;
 }
