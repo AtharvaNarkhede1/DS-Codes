@@ -14,3 +14,4 @@ int check(BT *P1, BT *P2){
     }
     return 0;
 }
+
