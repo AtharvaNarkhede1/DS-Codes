@@ -19,19 +19,28 @@ vector<pair<pair<int, int>, int>> calculatePrimsMST(int n, int m, vector<pair<pa
         adj[v].push_back(make_pair(u, w));
     }
 
-    vector<int> key(n + 1, INT_MAX);
-    vector<bool> mst(n + 1, false);
-    vector<int> parent(n + 1, -1);
+    vector<int> key(n + 1);
+    vector<bool> mst(n + 1);
+    vector<int> parent(n + 1);
 
-    // Start the algorithm from node 1
-    key[1] = 0;
+
+    for(int i=0; i <= n; i++) {
+        key[i] = INT_MAX;
+        mst[i] = false;
+        parent[i] = -1;
+    }
+
+
+    key[1] = 0; // Starting node
+    parent[1] = -1; // Starting node has no parent
 
     for (int i = 1; i < n; i++) {
-        int mini = INT_MAX, u = -1;
+        int mini = INT_MAX; 
+        int u;
 
         // Find the minimum node
         for (int v = 1; v <= n; v++) {
-            if (!mst[v] && key[v] < mini) {
+            if (mst[v] == false && key[v] < mini) {
                 u = v;
                 mini = key[v];
             }
@@ -44,7 +53,7 @@ vector<pair<pair<int, int>, int>> calculatePrimsMST(int n, int m, vector<pair<pa
         for (auto it : adj[u]) {
             int v = it.first;
             int w = it.second;
-            if (!mst[v] && w < key[v]) {
+            if (mst[v] == false && w < key[v]) {
                 parent[v] = u;
                 key[v] = w;
             }
@@ -59,18 +68,27 @@ vector<pair<pair<int, int>, int>> calculatePrimsMST(int n, int m, vector<pair<pa
 }
 
 int main() {
-    int n = 5; // Number of nodes
-    int m = 7; // Number of edges
+    int n, m;
+    vector<pair<pair<int, int>, int>> g;
 
-    vector<pair<pair<int, int>, int>> edges = {
-        {{1, 2}, 2}, {{1, 3}, 3}, {{2, 3}, 1}, {{2, 4}, 4}, 
-        {{3, 4}, 5}, {{3, 5}, 6}, {{4, 5}, 7}
-    };
+    // Example input (number of nodes and edges)
+    cout << "Enter number of vertices and edges: ";
+    cin >> n >> m;
 
-    vector<pair<pair<int, int>, int>> mst = calculatePrimsMST(n, m, edges);
+    // Input edges in the form: (u, v, weight)
+    cout<<"Enter edges (u v weight):\n";
+    for (int i = 0; i < m; i++) {
+        int u, v, w;
+        cin >> u >> v >> w;
+        g.push_back({{u, v}, w});
+    }
 
-    cout << "Minimum Spanning Tree (MST) edges:\n";
-    for (auto edge : mst) {
+    // Call the Prim's algorithm function
+    vector<pair<pair<int, int>, int>> mst = calculatePrimsMST(n, m, g);
+
+    // Print the MST
+    cout << "Edges in MST:\n";
+    for (auto &edge : mst) {
         cout << edge.first.first << " - " << edge.first.second << " : " << edge.second << endl;
     }
 
