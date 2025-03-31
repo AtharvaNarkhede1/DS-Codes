@@ -24,19 +24,20 @@ public:
         right=NULL;
     }
 
+    //create binary search tree
     void create(Employee*& root, Employee* val) {
-        if(root== NULL) {
+        if(root== NULL) { //if null enter val at root
             root= val;
             return;
         }
-        if(val->data < root->data) {
+        if(val->data < root->data) { //if val is less than root
             if(root->left == NULL) {
                 root->left = val;
             }else{
-                insert(root->left, val);
+                create(root->left, val);
             }
         }else{
-            if(root->right == NULL) {
+            if(root->right == NULL) { //if val is greater than root
                 root->right = val;
             }else{
                 create(root->right, val);
