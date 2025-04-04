@@ -54,7 +54,7 @@ vector<pair<pair<int, int>, int>> calculatePrimsMST(int n, int m, vector<pair<pa
             int v = it.first;
             int w = it.second;
             if (mst[v] == false && w < key[v]) {
-                parent[v] = u;
+               parent[v] = u;
                 key[v] = w;
             }
         }
@@ -93,4 +93,5 @@ int main() {
     }
 
     return 0;
+
 }
