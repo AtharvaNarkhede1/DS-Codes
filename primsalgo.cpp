@@ -6,7 +6,8 @@
 
 using namespace std;
 
-vector<pair<pair<int, int>, int>> calculatePrimsMST(int n, int m, vector<pair<pair<int, int>, int>> &g) {
+vector<pair<pair<int, int>, int>> 
+calculatePrimsMST(int n, int m, vector<pair<pair<int, int>, int>> &g) {
    
     // Create adjacency list
     unordered_map<int, list<pair<int, int>>> adj;
