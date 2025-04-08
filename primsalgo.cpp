@@ -30,7 +30,6 @@ vector<pair<pair<int, int>, int>> calculatePrimsMST(int n, int m, vector<pair<pa
         parent[i] = -1;
     }
 
-
     key[1] = 0; // Starting node
     parent[1] = -1; // Starting node has no parent
 
