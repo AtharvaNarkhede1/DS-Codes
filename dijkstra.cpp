@@ -2,8 +2,7 @@
 #include <climits>
 using namespace std;
 
-class GraphNode
-{
+class GraphNode{
 public:
     int source, destination, weight;
 
@@ -22,8 +21,7 @@ public:
     }
 };
 
-class Graph
-{
+class Graph{
 public:
     GraphNode graph[50][50];
 
