@@ -1,262 +1,183 @@
-#include<iostream>
+#include <iostream>
 using namespace std;
-class Hashtable{
+
+class Hashtable {
 public:
-string name;
-string id;
-string history;
-string treatment;
-Hashtable(){
-name="empty";
-id="empty";
-history="empty";
-treatment="empty";
-}
+    string name, id, history, treatment;
+
+    Hashtable() {
+        name = "empty";
+        id = "empty";
+        history = "empty";
+        treatment = "empty";
+    }
 };
-void insert(Hashtable h[],string name,string id,string history,string treatment,int array[],int &n){
-int val=0;
-for(char c:id){
-val+=(int)c;
+
+// Insert a record into the hash table
+void insert(Hashtable h[], string name, string id, string history, string treatment, int status[], int n) {
+    int val = 0;
+    for (char c : id) val += (int)c;
+    val %= n;
+
+    int i = 0, k = 0;
+    while (status[val] == 0) { // Handle collisions using quadratic probing
+        k++;
+        val = (val + k * k) % n;
+        if (k == n) {
+            cout << "Hashtable is full!" << endl;
+            return;
+        }
+    }
+
+    h[val].name = name;
+    h[val].id = id;
+    h[val].history = history;
+    h[val].treatment = treatment;
+    status[val] = 0;
+    cout << "Inserted at index: " << val << endl;
 }
-val=val%n;
-int i=0,j=1,k=0;
-if(array[val]==-1||array[val]==-2){
-h[val].name=name;
-h[val].id=id;
-h[val].history=history;
-h[val].treatment=treatment;
-array[val]=0;
-cout<<"Inserted at: "<<val<<endl;
-}else{
-while(i!=1){
-cout<<"Collision occurred at: "<<val<<endl;
-k++;
-val=(val+(k*k))%n;
-j++;
-if(array[val]==-1||array[val]==-2){
-h[val].name=name;
-h[val].id=id;
-h[val].history=history;
-h[val].treatment=treatment;
-array[val]=0;
-cout<<"Inserted at: "<<val<<endl;
-i=1;
+
+// Search for a record by ID
+void search(Hashtable h[], int status[], int n, string id) {
+    int val = 0;
+    for (char c : id) val += (int)c;
+    val %= n;
+
+    int k = 0;
+    while (status[val] != -1) {
+        if (status[val] == 0 && h[val].id == id) {
+            cout << "Record Found:\n";
+            cout << "Name: " << h[val].name << ", ID: " << h[val].id << ", History: " << h[val].history << ", Treatment: " << h[val].treatment << endl;
+            return;
+        }
+        k++;
+        val = (val + k * k) % n;
+        if (k == n) break;
+    }
+    cout << "Record not found!" << endl;
 }
-if(j==n){
-cout<<"Hashtable is full! Rehashing..."<<endl;
-rehash(h,array,n);
-insert(h,name,id,history,treatment,array,n);
-return;
+
+// Update a record by ID
+void update(Hashtable h[], int status[], int n, string id) {
+    int val = 0;
+    for (char c : id) val += (int)c;
+    val %= n;
+
+    int k = 0;
+    while (status[val] != -1) {
+        if (status[val] == 0 && h[val].id == id) {
+            cout << "Enter new details:\n";
+            cout << "Name: "; cin >> h[val].name;
+            cout << "History: "; cin >> h[val].history;
+            cout << "Treatment: "; cin >> h[val].treatment;
+            cout << "Record updated!" << endl;
+            return;
+        }
+        k++;
+        val = (val + k * k) % n;
+        if (k == n) break;
+    }
+    cout << "Record not found!" << endl;
 }
+
+// Delete a record by ID
+void deleteRecord(Hashtable h[], int status[], int n, string id) {
+    int val = 0;
+    for (char c : id) val += (int)c;
+    val %= n;
+
+    int k = 0;
+    while (status[val] != -1) {
+        if (status[val] == 0 && h[val].id == id) {
+            status[val] = -2; // Mark as deleted
+            cout << "Record deleted!" << endl;
+            return;
+        }
+        k++;
+        val = (val + k * k) % n;
+        if (k == n) break;
+    }
+    cout << "Record not found!" << endl;
 }
+
+// Display all records
+void display(Hashtable h[], int status[], int n) {
+    for (int i = 0; i < n; i++) {
+        if (status[i] == 0) {
+            cout << "Index " << i << ": Name: " << h[i].name << ", ID: " << h[i].id
+                 << ", History: " << h[i].history << ", Treatment: " << h[i].treatment << endl;
+        }
+    }
 }
+
+// Display records by history
+void displayByHistory(Hashtable h[], int status[], int n, string history) {
+    bool found = false;
+    for (int i = 0; i < n; i++) {
+        if (status[i] == 0 && h[i].history == history) {
+            cout << "Index " << i << ": Name: " << h[i].name << ", ID: " << h[i].id
+                 << ", History: " << h[i].history << ", Treatment: " << h[i].treatment << endl;
+            found = true;
+        }
+    }
+    if (!found) cout << "No records found with history: " << history << endl;
 }
-void rehash(Hashtable h[],int array[],int &n){
-int old_n=n;
-n=n*2;
-Hashtable* new_h=new Hashtable[n];
-int* new_array=new int[n];
-for(int i=0;i<n;i++){
-new_array[i]=-1;
-}
-for(int i=0;i<old_n;i++){
-if(array[i]==0){
-insert(new_h,h[i].name,h[i].id,h[i].history,h[i].treatment,new_array,n);
-}
-}
-delete[] h;
-delete[] array;
-h=new_h;
-array=new_array;
-}
-void display(Hashtable h[],int array[],int n){
-for(int i=0;i<n;i++){
-if(array[i]==0){
-cout<<"Name: "<<h[i].name<<endl;
-cout<<"ID: "<<h[i].id<<endl;
-cout<<"History: "<<h[i].history<<endl;
-cout<<"Treatment: "<<h[i].treatment<<endl;
-}
-}
-}
-void update(Hashtable h[],int array[],int n,string id){
-int val=0;
-int i=0,j=1,k=0;
-for(char c:id){
-val+=(int)c;
-}
-val=val%n;
-if(h[val].id==id&&array[val]==0){
-string name1,history1,treatment1,id1;
-cout<<"Enter the new patient id: ";
-cin>>id1;
-cout<<"Enter the new patient name: ";
-cin>>name1;
-cout<<"Enter the new patient history: ";
-cin>>history1;
-cout<<"Enter the new patient treatment: ";
-cin>>treatment1;
-h[val].name=name1;
-h[val].id=id1;
-h[val].history=history1;
-h[val].treatment=treatment1;
-return;
-}
-while(i!=1){
-k++;
-val=(val+(k*k))%n;
-j++;
-if(h[val].id==id&&array[val]==0){
-string name1,history1,id1,treatment1;
-cout<<"Enter the new patient id: ";
-cin>>id1;
-cout<<"Enter the new patient name: ";
-cin>>name1;
-cout<<"Enter the new patient history: ";
-cin>>history1;
-cout<<"Enter the new patient treatment: ";
-cin>>treatment1;
-h[val].name=name1;
-h[val].id=id1;
-h[val].history=history1;
-h[val].treatment=treatment1;
-i=1;
-}
-if(j==n){
-cout<<"Track not found"<<endl;
-i=1;
-}
-}
-}
-void search(Hashtable h[],int array[],int n,string id){
-int val=0;
-int i=0,j=1,k=0;
-for(char c:id){
-val+=(int)c;
-}
-val=val%n;
-if(h[val].id==id&&array[val]==0){
-cout<<"Name: "<<h[val].name<<endl;
-cout<<"ID: "<<h[val].id<<endl;
-cout<<"History: "<<h[val].history<<endl;
-cout<<"Treatment: "<<h[val].treatment<<endl;
-return;
-}
-while(i!=1){
-k++;
-val=(val+(k*k))%n;
-j++;
-if(h[val].id==id&&array[val]==0){
-cout<<"Name: "<<h[val].name<<endl;
-cout<<"ID: "<<h[val].id<<endl;
-cout<<"History: "<<h[val].history<<endl;
-cout<<"Treatment: "<<h[val].treatment<<endl;
-i=1;
-}
-if(j==n){
-cout<<"Record not found!"<<endl;
-i=1;
-}
-}
-}
-void deleterecord(Hashtable h[],int array[],int n,string id){
-int val=0;
-int i=0,j=1,k=0;
-for(char c:id){
-val+=(int)c;
-}
-val=val%n;
-if(h[val].id==id&&array[val]==0){
-array[val]=-2;
-cout<<"Record deleted!"<<endl;
-return;
-}
-while(i!=1){
-val=(val+(k*k))%n;
-j++;
-if(h[val].id==id&&array[val]==0){
-array[val]=-2;
-cout<<"Record deleted!"<<endl;
-i=1;
-}
-if(j==n){
-cout<<"Track not found"<<endl;
-i=1;
-}
-}
-}
-void displaybyhistory(Hashtable h[],int array[],int n,string history1){
-int flag=0;
-for(int i=0;i<n;i++){
-if(array[i]==0&&h[i].history==history1){
-cout<<"Name: "<<h[i].name<<endl;
-cout<<"ID: "<<h[i].id<<endl;
-cout<<"History: "<<h[i].history<<endl;
-cout<<"Treatment: "<<h[i].treatment<<endl;
-flag=1;
-}
-}
-if(flag==0){
-cout<<history1<<" is not present in records!"<<endl;
-}
-}
-int main(){
-int n;
-cout<<"Enter the number of patient tracks you want to insert (Hashtable size): ";
-cin>>n;
-Hashtable* h=new Hashtable[n];
-int* array=new int[n];
-for(int i=0;i<n;i++){
-array[i]=-1;
-}
-int ch;
-string name,history,id,id1,history1,treatment,treatment1;
-do{
-cout<<"1.Insert\n2.Search\n3.Update\n4.Delete\n5.Display\n6.Display by History\n7.Exit\nEnter your choice: ";
-cin>>ch;
-switch(ch){
-case 1:
-cout<<"Enter the patient ID: ";
-cin>>id;
-cout<<"Enter the patient name: ";
-cin>>name;
-cout<<"Enter the patient history: ";
-cin>>history;
-cout<<"Enter the patient treatment: ";
-cin>>treatment;
-insert(h,name,id,history,treatment,array,n);
-break;
-case 2:
-cout<<"Enter the ID which you want to search: ";
-cin>>id1;
-search(h,array,n,id1);
-break;
-case 3:
-cout<<"Enter the ID which you want to update: ";
-cin>>id1;
-update(h,array,n,id1);
-break;
-case 4:
-cout<<"Enter the ID which you want to delete: ";
-cin>>id1;
-deleterecord(h,array,n,id1);
-break;
-case 5:
-display(h,array,n);
-break;
-case 6:
-cout<<"Enter the history which you want to display: ";
-cin>>history1;
-displaybyhistory(h,array,n,history1);
-break;
-case 7:
-cout<<"Exiting..."<<endl;
-break;
-default:
-cout<<"Wrong choice! Try again."<<endl;
-}
-}while(ch!=7);
-delete[] h;
-delete[] array;
-return 0;
+
+// Main function
+int main() {
+    int n;
+    cout << "Enter the size of the hash table: ";
+    cin >> n;
+
+    Hashtable* h = new Hashtable[n];
+    int* status = new int[n];
+    for (int i = 0; i < n; i++) status[i] = -1; // Initialize all slots as empty
+
+    int choice;
+    string name, id, history, treatement;
+
+    do {
+        cout << "\n1. Insert\n2. Search\n3. Update\n4. Delete\n5. Display\n6. History of client\n7. Exit\nEnter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                cout << "Enter Name, ID, History, Treatment: ";
+                cin >> name >> id >> history >> treatment;
+                insert(h, name, id, history, treatment, status, n);
+                break;
+            case 2:
+                cout << "Enter ID to search: ";
+                cin >> id;
+                search(h, status, n, id);
+                break;
+            case 3:
+                cout << "Enter ID to update: ";
+                cin >> id;
+                update(h, status, n, id);
+                break;
+            case 4:
+                cout << "Enter ID to delete: ";
+                cin >> id;
+                deleteRecord(h, status, n, id);
+                break;
+            case 5:
+                display(h, status, n);
+                break;
+            case 6:
+                cout << "Enter History to display: ";
+                cin >> history;
+                displayByHistory(h, status, n, history);
+                break;
+            case 7:
+                cout << "Exiting..." << endl;
+                break;
+            default:
+                cout << "Invalid choice! Try again." << endl;
+        }
+    } while (choice != 7);
+
+    delete[] h;
+    delete[] status;
+    return 0;
 }
