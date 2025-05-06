@@ -1,84 +1,120 @@
-#include<iostream>
+#include <iostream>
+#include <iomanip>
 using namespace std;
 
-class Obst {
+class OBST {
+    int n;
+    string key[10];
+    float p[10], q[11];
+    float W[11][11], C[11][11];
+    int R[11][11];
+
 public:
-    int key[10];
-    int success_prob[10];
-    int unsuccess_prob[10];
-    int w[10][10];
-    int c[10][10];
-    int r[10][10];
-    int k;
-
-    Obst() {
-        k = 0;
-    }
-
-    void getKey() {
-        cout << "Enter number of keys: ";
-        cin >> k;
-        for (int i = 1; i <= k; i++) {
-            cout << "Enter key " << i << ": ";
-            cin >> key[i];
-            cout << "Enter successful probability of key " << key[i] << ": ";
-            cin >> success_prob[i];
-        }
-        for (int i = 0; i <= k; i++) {
-            cout << "Enter unsuccessful probability for index " << i << ": ";
-            cin >> unsuccess_prob[i];
-        }
-    }
-
-    void computeObst() {
-        int n = k + 1;
-
-        // Initialization of w[i][i], c[i][i], and r[i][i]
-        for (int i = 0; i < n; i++) {
-            w[i][i] = unsuccess_prob[i];
-            c[i][i] = 0;
-            r[i][i] = 0;
-
-            cout << "[i=" << i << ", j=" << i << "] ";
-            cout << "w[" << i << "][" << i << "] = " << w[i][i] << "\t";
-            cout << "r[" << i << "][" << i << "] = " << r[i][i] << "\t";
-            cout << "c[" << i << "][" << i << "] = " << c[i][i] << "\n";
-        }
-
-        // OBST calculation using dynamic programming
-        for (int length = 1; length < n; length++) {
-            for (int i = 0; i < n - length; i++) {
-                int j = i + length;
-                w[i][j] = w[i][j - 1] + success_prob[j] + unsuccess_prob[j];
-
-                int minCost = 999;
-                int minRoot = -1;
-
-                for (int k = i + 1; k <= j; k++) {
-                    int tempCost = c[i][k - 1] + c[k][j];
-                    if (tempCost < minCost) {
-                        minCost = tempCost;
-                        minRoot = k;
-                    }
-                }
-
-                c[i][j] = minCost + w[i][j];
-                r[i][j] = minRoot;
-
-                cout << "[i=" << i << ", j=" << j << "] ";
-                cout << "w[" << i << "][" << j << "] = " << w[i][j] << "\t";
-                cout << "r[" << i << "][" << j << "] = " << r[i][j] << "\t";
-                cout << "c[" << i << "][" << j << "] = " << c[i][j] << "\n";
-            }
-        }
-
-        cout << "\nMinimum cost of OBST: " << c[0][k] << endl;
-    }
+    void accept();
+    void calculate();
+    void display();
+    void showTree(int i, int j, string parent, string direction);
 };
 
+void OBST::accept() {
+    cout << "Enter number of keys: ";
+    cin >> n;
+    cout << "Enter keys in sorted order:\n";
+    for (int i = 0; i < n; i++) {
+        cin >> key[i];
+    }
+    cout << "Enter successful search probabilities (p):\n";
+    for (int i = 0; i < n; i++) {
+        cin >> p[i];
+    }
+    cout << "Enter unsuccessful search probabilities (q):\n";
+    for (int i = 0; i <= n; i++) {
+        cin >> q[i];
+    }
+}
+
+void OBST::calculate() {
+    for (int i = 0; i <= n; i++) {
+        W[i][i] = q[i];
+        C[i][i] = 0;
+        R[i][i] = 0;
+    }
+
+    for (int gap = 1; gap <= n; gap++) {
+        for (int i = 0; i <= n - gap; i++) {
+            int j = i + gap;
+            W[i][j] = W[i][j - 1] + p[j - 1] + q[j];
+
+            float min = 9999;
+            int root = 0;
+
+            for (int k = i + 1; k <= j; k++) {
+                float cost = C[i][k - 1] + C[k][j];
+                if (cost < min) {
+                    min = cost;
+                    root = k;
+                }
+            }
+
+            C[i][j] = W[i][j] + min;
+            R[i][j] = root;
+        }
+    }
+}
+
+void OBST::display() {
+    cout << fixed << setprecision(2);
+
+    cout << "\nMatrix W (Weights):\n";
+    for (int gap = 0; gap <= n; gap++) {
+        for (int i = 0; i <= n - gap; i++) {
+            int j = i + gap;
+            cout << "W[" << i << "][" << j << "] = " << W[i][j] << "\t";
+        }
+        cout << endl;
+    }
+
+    cout << "\nMatrix C (Costs):\n";
+    for (int gap = 0; gap <= n; gap++) {
+        for (int i = 0; i <= n - gap; i++) {
+            int j = i + gap;
+            cout << "C[" << i << "][" << j << "] = " << C[i][j] << "\t";
+        }
+        cout << endl;
+    }
+
+    cout << "\nMatrix R (Roots):\n";
+    for (int gap = 0; gap <= n; gap++) {
+        for (int i = 0; i <= n - gap; i++) {
+            int j = i + gap;
+            cout << "R[" << i << "][" << j << "] = " << R[i][j] << "\t";
+        }
+        cout << endl;
+    }
+
+    cout << "\nMinimum cost of Optimal BST = " << C[0][n] << endl;
+
+    cout << "\nOptimal Binary Search Tree Structure:\n";
+    showTree(0, n, "None", "Root");
+}
+
+// Recursive function to print tree structure
+void OBST::showTree(int i, int j, string parent, string direction) {
+    int rootIndex = R[i][j];
+    if (rootIndex == 0 || rootIndex == -1)
+        return;
+
+    string currKey = key[rootIndex - 1];
+    cout << currKey << " is the " << direction << " of " << parent << endl;
+
+    showTree(i, rootIndex - 1, currKey, "Left");
+    showTree(rootIndex, j, currKey, "Right");
+}
+
 int main() {
-    Obst o;
-    o.getKey();
-    o.computeObst();
+    OBST t;
+    t.accept();
+    t.calculate();
+    t.display();
     return 0;
 }
