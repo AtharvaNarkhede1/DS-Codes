@@ -97,7 +97,7 @@ void OBST::display() {
     cout << "\nOptimal Binary Search Tree Structure:\n";
     showTree(0, n, "None", "Root");
 }
-
+ 
 // Recursive function to print tree structure
 void OBST::showTree(int i, int j, string parent, string direction) {
     int rootIndex = R[i][j];
