@@ -18,7 +18,7 @@ public:
     Employee* left;
     Employee* right;
 
-    Employee(int val) {
+     Employee(int val) {
         data = val;
         left = NULL;
         right = NULL;
