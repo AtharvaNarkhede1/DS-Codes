@@ -8,7 +8,7 @@ class MaxHeap {
 public:
     MaxHeap() {
         size = 0;
-    }
+    }   
 
     void insert(int val) {
         int i = size;

@@ -106,7 +106,7 @@ void OBST::showTree(int i, int j, string parent, string direction) {
 
     string currKey = key[rootIndex - 1];
     cout << currKey << " is the " << direction << " of " << parent << endl;
-
+    
     showTree(i, rootIndex - 1, currKey, "Left");
     showTree(rootIndex, j, currKey, "Right");
 }
