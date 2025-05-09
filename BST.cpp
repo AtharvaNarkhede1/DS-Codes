@@ -19,115 +19,126 @@ public:
     Employee* right;
 
     Employee(int val) {
-        data=val;
-        left=NULL;
-        right=NULL;
+        data = val;
+        left = NULL;
+        right = NULL;
     }
 
-    //create binary search tree
-    void create(Employee*& root, Employee* val) {
-        if(root== NULL) { //if null enter val at root
-            root= val;
+    // Create binary search tree
+    void create(Employee*& root, Employee* val) { // Pass root by reference
+        if (root == NULL) { // If null, insert val at root
+            root = val;
             return;
         }
-        if(val->data < root->data) { //if val is less than root
-            if(root->left == NULL) {
+        if (val->data < root->data) { // If val is less than root
+            if (root->left == NULL) {
                 root->left = val;
-            }else{
+            } else {
                 create(root->left, val);
             }
-        }else{
-            if(root->right == NULL) { //if val is greater than root
+        } else { // If val is greater than root
+            if (root->right == NULL) {
                 root->right = val;
-            }else{
+            } else {
                 create(root->right, val);
             }
         }
     }
 
-    void search(Employee* root, int key) {
-        while(root != NULL) {
-            if(root->data == key) {
+    // Search for a key in the tree
+    Employee* search(Employee* root, int key) {
+        while (root != NULL) {
+            if (root->data == key) {
                 return root;
-            }else if(key < root->data) {
-                root=root->left;
-            }else{
-                root= root->right;
+            } else if (key < root->data) {
+                root = root->left;
+            } else {
+                root = root->right;
             }
         }
         return NULL;
     }
 
-    void inorder(Employee* root){
-        if(root==NULL){
+    // Inorder traversal
+    void inorder(Employee* root) {
+        if (root == NULL) {
             return;
         }
         inorder(root->left);
-        cout<<root->data;
+        cout << root->data << " ";
         inorder(root->right);
     }
 
-    void minsalary(Employee* root){
-        current=root;
-        while(current->left!=NULL){
-            current=current->left;
+    // Find minimum salary
+    int minsalary(Employee* root) {
+        Employee* current = root;
+        while (current->left != NULL) {
+            current = current->left;
         }
+        return current->data;
     }
 
-    void maxsalary(Employee* root){
-        current=root;
-        while(current->right!=NULL){
-            current=current->right;
+    // Find maximum salary
+    int maxsalary(Employee* root) {
+        Employee* current = root;
+        while (current->right != NULL) {
+            current = current->right;
         }
+        return current->data;
     }
 };
 
 int main() {
-    Employee e;
+    Employee* root = NULL; // Root of the tree
     int ch, val;
 
-    do{
-        cout<<"Enter your choice";
-        cout<<"1.Create\n2.Search\n3.Update\n4.Display\n5.Minimum Salary\n6.Maximum Salary\n7.Average Salary\n8.Total no of Employees\n";
-        cin>>ch;
-        switch(ch){
-            case 1:
-            cout << "Enter salary: ";
+    do {
+        cout << "\nEnter your choice:\n";
+        cout << "1. Create\n2. Search\n3. Display\n4. Minimum Salary\n5. Maximum Salary\n6. Exit\n";
+        cin >> ch;
+
+        switch (ch) {
+            case 1: {
+                cout << "Enter salary: ";
                 cin >> val;
-                e.create(val);
-            break;
-
-            case 2:
-            cout << "Enter salary to search: ";
+                Employee* newEmployee = new Employee(val);
+                newEmployee->create(root, newEmployee);
+                break;
+            }
+            case 2: {
+                cout << "Enter salary to search: ";
                 cin >> val;
-                cout << (e.search(val));
-            break;
-
-            case 3:
-            cout << "Employees: ";
-            e.display();
-            break;
-
-            case 4:
-            break;
-
-            case 5:
-            cout << "Minimum salary: " << e.minsalary() << "\n";
-            break;
-            
-            case 6:
-            cout << "Maximum salary: " << e.maxsalary() << "\n";
-            break;
-
-            case 7:
-            break;
-
-            case 8:
-            break;
-
-            default:
+                Employee* result = root->search(root, val);
+                if (result != NULL) {
+                    cout << "Employee with salary " << val << " found.\n";
+                } else {
+                    cout << "Employee with salary " << val << " not found.\n";
+                }
+                break;
+            }
+            case 3: {
+                cout << "Employees (inorder traversal): ";
+                root->inorder(root);
+                cout << endl;
+                break;
+            }
+            case 4: {
+                cout << "Minimum salary: " << root->minsalary(root) << "\n";
+                break;
+            }
+            case 5: {
+                cout << "Maximum salary: " << root->maxsalary(root) << "\n";
+                break;
+            }
+            case 6: {
+                cout << "Exiting...\n";
+                break;
+            }
+            default: {
                 cout << "Invalid choice. Please try again.\n";
+            }
         }
-    }while(ch!=9);
+    } while (ch != 6);
+
     return 0;
 }

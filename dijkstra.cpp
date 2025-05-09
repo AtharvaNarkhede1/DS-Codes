@@ -1,185 +1,113 @@
-#include <iostream>
-#include <climits>
+#include<iostream>
+#include<vector>
+#include<climits>
 using namespace std;
 
-class GraphNode{
-public:
-    int source, destination, weight;
+class dij{
+    
+    public:
+        int n;
+        vector<int> nodes;
+        vector<vector<int>> adj;
 
-    GraphNode()
-    {
-        source = 0;
-        destination = 0;
-        weight = 0;
-    }
+        void inp(){
+            cout<<"Enter the number of vertices: ";
+            cin>>n;
+            adj.resize(n, vector<int>(n, 0));
+            
+            cout<<"Enter nodes: ";
+            for(int i=0; i<n; i++){
+                int x;
 
-    GraphNode(int src, int dest, int w)
-    {
-        source = src;
-        destination = dest;
-        weight = w;
-    }
-};
-
-class Graph{
-public:
-    GraphNode graph[50][50];
-
-    Graph()
-    {
-        for (int i = 0; i < 50; i++)
-        {
-            for (int j = 0; j < 50; j++)
-            {
-                graph[i][j].weight = 0;
-            }
-        }
-    }
-
-    void addEdge(int source, int destination, int weight)
-    {
-        graph[source][destination] = GraphNode(source, destination, weight);
-        graph[destination][source] = GraphNode(destination, source, weight); // since undirected
-    }
-
-    void printGraph(int vertices)
-    {
-        cout << "\nGraph Adjacency Matrix:\n";
-        for (int i = 0; i < vertices; i++)
-        {
-            cout << "[ ";
-            for (int j = 0; j < vertices; j++)
-            {
-                cout << graph[i][j].weight << " , ";
-            }
-            cout << "]" << endl;
-        }
-    }
-
-    void printPath(int node, int parent[])
-    {
-        if (node == -1)
-            return;
-        printPath(parent[node], parent);
-        cout << "Marrage Hall : " << node << " -> ";
-    }
-
-    void dijkstra(int start, int vertices)
-    {
-        int distance[vertices];
-        bool visited[vertices];
-        int parent[vertices];
-
-        for (int i = 0; i < vertices; i++)
-        {
-            distance[i] = INT_MAX;
-            visited[i] = false;
-            parent[i] = -1;
-        }
-
-        distance[start] = 0;
-
-        for (int i = 0; i < vertices - 1; i++)
-        {
-            int minIndex = -1;
-            int minValue = INT_MAX;
-
-            for (int j = 0; j < vertices; j++)
-            {
-                if (!visited[j] && distance[j] < minValue)
-                {
-                    minValue = distance[j];
-                    minIndex = j;
-                }
+                cin>>x;
+                nodes.push_back(x);
             }
 
-            if (minIndex == -1)
-                break; // Remaining vertices are not reachable
+            for(int i=0; i<n;i++){
 
-            visited[minIndex] = true;
-
-            for (int k = 0; k < vertices; k++)
-            {
-                if (graph[minIndex][k].weight != 0 && !visited[k])
-                {
-                    if (distance[minIndex] + graph[minIndex][k].weight < distance[k])
-                    {
-                        distance[k] = distance[minIndex] + graph[minIndex][k].weight;
-                        parent[k] = minIndex;
+                for(int j=i; j<n; j++){
+                    if(i==j){
+                        adj[i][j]=0;
+                    }
+                    else{
+                        cout<<"Enter the weight of edge from "<<nodes[i]<<" to "<<nodes[j]<<" : ";
+                        int x;
+                        cin>>x;
+                        adj[i][j]=x;
+                        adj[j][i]=x;
                     }
                 }
             }
         }
 
-        cout << "\nShortest distances from source Home -  " << start << ":\n";
-        for (int i = 0; i < vertices; i++)
-        {
-            cout << "Marriage Hall :  " << i << " : " << distance[i] << endl;
+        int finmin(vector<bool> visited, vector<int> src){
+            int res = -1, min = INT_MAX, ind = -1;
+
+            for(int i=0;i<n;i++){
+
+                if(!visited[i] && src[i]<min){
+                    ind = i;
+                    min = src[i];
+                }
+            }
+            return ind;
         }
 
-        cout << "\nPaths:\n";
-        for (int i = 0; i < vertices; i++)
-        {
-            cout << "Path to Marriage Hall :  " << i << " : ";
-            if (distance[i] == INT_MAX)
-                cout << "No path";
-            else if (i == 0)
-                cout << "Destination already reached !";
-            else
-                printPath(i, parent);
-            cout << " (end of the path)" << endl;
-        }
+        void dijkstra(int start){
 
-        int min_path = INT_MAX;
-        int min_path_index = -1;           
-        for (int i = 1; i < vertices; i++) 
-        {
-            if (distance[i] < min_path)
-            {
-                min_path = distance[i];
-                min_path_index = i;
+            //failsafes
+            if (n == 0) {
+                cout << "Graph not created yet.\n";
+                return;
+            }
+
+            //algo
+            vector<int> dist(n, INT_MAX);
+            // vector<int> src = adj[start];
+            vector<bool> visited(n, false);
+
+            dist[start] = 0;
+            int count = 0;//to count number of visited nodes
+
+            while(count<n){
+                
+                //find minimum unvisited node from start
+                int u = finmin(visited,adj[start]);
+                if(u == -1){
+                    break;
+                }
+                
+                //mark u as visited now
+                visited[u]=true;
+                for(int i=0;i<n;i++){
+
+                    if(!visited[i] && adj[u][i] &&
+                        dist[u] != INT_MAX &&
+                        dist[u] + adj[u][i] < dist[i])
+                    {
+                        dist[i] = dist[u] + adj[u][i];
+                    }
+                }
+                count++;
+            }
+
+            cout<<"Distance From "<<nodes[start];
+            for(int i=0;i<n;i++){
+
+                cout<<"\nTo "<<nodes[i]<<"is "<<dist[i];
             }
         }
-
-        if (min_path_index != -1)
-        {
-            cout << "\n\nThe Nearest Marriage Hall From Home is Marriage hall no. "
-                 << min_path_index << " Which is " << min_path << " units away" << endl;
-        }
-        else
-        {
-            cout << "\n\nNo reachable Marriage Hall found from Home." << endl;
-        }
-    }
 };
 
-int main()
-{
-    int vertices, edges;
-    cout << "Enter Number of Marriage Halls : ";
-    cin >> vertices;
-    cout << "Enter Number of Routes with them  : ";
-    cin >> edges;
 
-    Graph graph;
-    for (int i = 0; i < edges; i++)
-    {
-        int source, destination, weight;
-        cout << "Enter Route's starting Marriage Hall no.(For Home press 0) : ";
-        cin >> source;
-        cout << "Enter Route's destination Marriage Hall no. : ";
-        cin >> destination;
-        cout << "Enter Distance b/w them : ";
-        cin >> weight;
-
-        graph.addEdge(source, destination, weight);
-    }
-
-    graph.printGraph(vertices);
-
-    cout << "\nStarting Vertex is Home - 0 : ";
-
-    graph.dijkstra(0, vertices);
-
+int main(){
+    
+    dij g;
+    g.inp();
+    int start;
+    cout<<"Enter the starting node: ";
+    cin>>start;
+    g.dijkstra(start);
+    
     return 0;
 }
