@@ -100,7 +100,7 @@ int main() {
     cout << "Enter number of Marriage Halls: ";
     cin >> vertices;
     cout << "Enter number of Routes: ";
-    cin >> edges;
+    cin >> edges;     
 
     Graph g;
     for (int i = 0; i < edges; ++i) {
