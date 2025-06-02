@@ -41,7 +41,7 @@ void OBST::calculate() {
     }
 
     for (int gap = 1; gap <= n; gap++) {
-        for (int i = 0; i <= n - gap; i++) {
+        for (int i = 0; i <= n -  gap; i++) {
             int j = i + gap;
             W[i][j] = W[i][j - 1] + p[j - 1] + q[j];
 

@@ -30,7 +30,7 @@ int main(){
     
     set<int>::iterator it = s.begin();//currently at 0th index
     it++; // now at 0 + 1 index i.e 1st index 
-    s.erase(it); // deletes 1st index element
+    s.erase(it); // deletes 1st index element   
 
     for(auto i:s){
         cout<<i<<endl;
